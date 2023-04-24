@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{% url 'home' %}">Inicio</a></li>
+            {% if user.is_authenticated %}
+                {% comment %} <li><a href="{% url 'transactions:list' %}">Transacciones</a></li>
+                <li><a href="{% url 'transactions:create' %}">Agregar transacción</a></li>
+                <li><a href="{% url 'logout' %}">Cerrar sesión</a></li> {% endcomment %}
+                <h2>Estás autenticad@</h2>
+            {% else %}
+                {% comment %} <li><a href="{% url 'login' %}">Iniciar sesión</a></li> {% endcomment %}
+                <li><a href="{% url 'register' %}">Registrarse</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
