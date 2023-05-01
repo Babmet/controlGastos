@@ -1,5 +1,5 @@
 from django import forms
-from .models import User
+from .models import User, Transaction
 
 class UserCreationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -22,3 +22,4 @@ class UserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+

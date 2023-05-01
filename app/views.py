@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 from .models import User
 from .forms import UserCreationForm
 
@@ -31,8 +34,35 @@ def register(request):
                 phone=u_phone,
                 address=u_address,
             )
+            if user:
+                messages.success(request, 'Your account has been created!')
+            else:
+                messages.error(request, 'There was an error creating your account.')
             login(request, user)
             return redirect('home')
     else:
         form = UserCreationForm()
+        
     return render(request, 'register.html', {'form': form})
+
+@login_required
+def profile(request):
+    user = request.user
+    return render(request, 'profile.html', {'user': user})
+
+
+def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('profile')
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('profile')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html', {'form': form})

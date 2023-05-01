@@ -2,6 +2,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils import timezone
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -24,6 +25,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=50, null=False, blank=False)
     address = models.CharField(max_length=50, null=False, blank=False)
+    date_joined = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -42,6 +44,15 @@ class User(AbstractBaseUser):
     def getAddress(self):
         return self.address
     
+    def getName(self):
+        return self.name
+
+    def getLastName(self):
+        return self.lastname
+    
+    def getFullName(self):
+        return f'{self.name} {self.lastname}'
+    
 
 class Transaction(models.Model):
     TRANSACTION_TYPE_CHOICES = (
@@ -52,7 +63,7 @@ class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255)
-    date = models.DateField()
+    date = models.DateField(default=timezone.now)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPE_CHOICES)
 
     def __str__(self):
